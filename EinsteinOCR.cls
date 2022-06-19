@@ -149,5 +149,38 @@ public class EinsteinOCR {
         }
         
     }
+    
+     public static void einsteinOCRInvoice() {
+        String access_token = getAccessToken();
+        HttpRequest req = new HttpRequest();
+        req.setMethod('POST');
+        req.setEndpoint('https://api.einstein.ai/v2/vision/ocr');
+        req.setHeader('content-type', 'multipart/form-data; charset="UTF-8"; boundary="1ff13444ed8140c7a32fc4e6451aa76d"');
+        req.setHeader('Authorization', 'Bearer '+access_token); //replace token with your access token
+        
+        req.setHeader('Cache-Control', 'no-cache');
+        string form64 = '';
+        
+        form64 += HttpFormBuilder.WriteBoundary();
+        form64 += HttpFormBuilder.WriteBodyParameter('sampleLocation', 'https://newstechnologystuff.com/wp-content/uploads/2022/06/SampleInvoice-724x1024.png');
+        form64 += HttpFormBuilder.WriteBoundary();
+        form64 += HttpFormBuilder.WriteBodyParameter('modelId', 'tabulatev2');
+        form64 += HttpFormBuilder.WriteBoundary();
+        form64 += HttpFormBuilder.WriteBodyParameter('task', 'invoice ');
+        form64 += HttpFormBuilder.WriteBoundary(HttpFormBuilder.EndingType.CrLf);
+        
+        blob formBlob = EncodingUtil.base64Decode(form64);
+        string contentLength = string.valueOf(formBlob.size());
+        
+        req.setBodyAsBlob(formBlob);
+        req.setHeader('Connection', 'keep-alive');
+        req.setHeader('Content-Length', contentLength);
+        req.setTimeout(60*1000);
+        
+        Http h = new Http();
+        String resp;
+        HttpResponse res = h.send(req);
+        system.debug(res +'========='+res.getBody());
+    }
 
 }
